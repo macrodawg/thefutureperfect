@@ -2,12 +2,12 @@
 ## The Future Perfect: A Social Media Powered, Community Forward Approach to ERASE Child Trafficking 
 
 <p align="center">
-  <img src="/Users/jasminecui/Desktop/futureperfectreadme.png" width="350" title="The Future Perfect: Building a Better, Safer Future">
+  <img src="https://github.com/macrodawg/thefutureperfect/blob/main/images/futureperfectreadme.png" width="350" title="The Future Perfect: Building a Better, Safer Future">
 </p>
 
 
 ## Team Members:
-### • Jasmine Cui 
-### • Danielle Handel 
-### • Kellen Sandvik 
+#### • Jasmine Cui 
+#### • Danielle Handel 
+#### • Kellen Sandvik 
 
