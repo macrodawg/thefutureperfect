@@ -16,4 +16,4 @@
 
 #### Thus, it goes without saying we put channeled our efforts into constructing a comprehensive, community forward solution to help ERASE Child Trafficking both expand their platform while engaging stakeholders. Now more than ever, social media has entered the fabric of our everyday lives. Most importantly, platforms like Facebook, Twitter, and Instagram have allowed those who have been diminished, sidelined, or otherwise pushed to the margins to reclaim the power of their voice. 
 
-#### By helping ERASE expand and refine their social media approach we hope to play our small role in helping restore not only the safety, but also the dignity those who are young and vulnerable deserve. 
+#### By helping ERASE expand and refine their social media approach we hope to play our small role in helping restore not only the safety, but also the dignity young, vulnerable people deserve. 
