@@ -20,7 +20,7 @@
 ### Ethos 
 #### Above all, we believe, firmly, that _a child's rights are human rights._ 
 
-#### Master Modeler 2021 represents, to us, more than a competition, but, rather an opportunity to contribute our talents and energy to a cause that is deeply meaningful and impactful. 
+#### To us, Master Modeler 2021 represents more than a competition — it is an opportunity to contribute our talents, our energy to a cause that is deeply meaningful and impactful. 
 
 #### Thus, it goes without saying we put channeled our efforts into constructing a comprehensive, community forward solution to help ERASE Child Trafficking expand their platform while engaging stakeholders. Now more than ever, social media has entered the fabric of our everyday lives — platforms like Facebook, Twitter, and Instagram have allowed those who have been diminished, sidelined, or otherwise pushed to the margins to reclaim the power of their voice. 
 
