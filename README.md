@@ -13,9 +13,9 @@
   <img src="https://github.com/macrodawg/thefutureperfect/blob/main/images/kellen.png" width="200" title="Kellen Sandvik">
 </p>
 
-#### • Jasmine Ye '21
-#### • Danielle Handel '21
-#### • Kellen Sandvik '21
+#### • Jasmine Ye 
+#### • Danielle Handel
+#### • Kellen Sandvik 
 
 ### Ethos 
 #### Above all, we believe, firmly, that _a child's rights are human rights._ Master Modeler 2021 represents, to us, more than a competition, but, rather an opportunity to contribute our talents and energy to a cause that is deeply meaningful and impactful. 
