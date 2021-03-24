@@ -7,6 +7,12 @@
 
 
 ### Team Members:
+<p align="center">
+  <img src="https://github.com/macrodawg/thefutureperfect/blob/main/images/Jasmine.png" width="200" title="Jasmine Cui">
+  <img src="https://github.com/macrodawg/thefutureperfect/blob/main/images/danielle.png" width="200" title="Danielle Handel">
+  <img src="https://github.com/macrodawg/thefutureperfect/blob/main/images/kellen.png" width="200" title="Kellen Sandvik">
+</p>
+
 #### • Jasmine Cui 
 #### • Danielle Handel 
 #### • Kellen Sandvik 
