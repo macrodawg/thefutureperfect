@@ -1,0 +1,59 @@
+---
+title: "Future Perfect Model"
+author: "Jasmine Cui"
+date: "3/21/2021"
+output: html_document
+---
+
+# Load Libraries 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Uncomment and run the following four lines to install necessary packages 
+# install.packages('tidyverse')
+# install.packages('dplyr')
+# install.packages('ggplot2')
+# devtools::install_github('Mikata-Project/ggthemr') 
+
+library('tidyverse')
+library('dplyr')
+library('ggplot2')
+library('ggthemr')
+
+ggthemr('fresh')
+``` 
+
+# Data Exploration
+```{r, message = FALSE}
+# Load Data 
+futurePerfectFeature = 
+  read_csv('https://raw.githubusercontent.com/macrodawg/thefutureperfect/main/features-data.csv') 
+
+# First, we want to explore ERASE's current emotional approach. We choose to begin by with a macro-level breakdown of which direction ERASE's posts tend to lean towards, generating a histogram which illustrates the frequency with which ERASE opts for a positive, negative, or neutral post tone. 
+
+# Primary Emotion Type 
+emotionType = 
+  futurePerfectFeature %>% 
+  dplyr::filter(., text_primary_emotion != '0') 
+  
+emotionFreqPlot = 
+  ggplot(data = emotionType, aes(text_primary_emotion, fill = text_primary_emotion)) + 
+  geom_bar() + 
+  xlab('Primary Emotion Type of Post') + 
+  ylab('Number of Posts') + 
+  ggtitle('Distribution of Posts by Primary Emotion Category', subtitle = 'Based on ERASE\'s FB Post History') + 
+  guides(fill = guide_legend(title = 'Primary Post Emotion Type'))
+
+print(emotionFreqPlot)
+
+# From this, it would seem that many of ERASE's posts adopt a positive tone. 
+
+
+
+
+```
+
+
+```{r}
+
+```
+
