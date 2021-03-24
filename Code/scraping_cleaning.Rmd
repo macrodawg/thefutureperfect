@@ -1,0 +1,32 @@
+---
+title: "Cleaning Trafficking"
+author: "Danielle Handel"
+date: "3/21/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "C:/Users/hande/Documents/Spring 2021/Future Perfect/", echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+
+setwd("C:/Users/hande/Documents/Spring 2021/Future Perfect/")
+
+library(stringr)
+```
+
+
+```{r}
+files <- list.files(pattern = "*.csv")
+
+combined_files <- bind_rows(lapply(files, read.csv))
+```
+
+
+```{r}
+#write.csv(combined_files, "other_orgs_fb_scrape")
+```
+
+
+
+
