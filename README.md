@@ -3,7 +3,7 @@
 
 _[****NEW: Check out our slide deck!****](https://docs.google.com/presentation/d/19SPfwN32y4M_-oad14gpWVdvJBZjMOaD1NKWL0Ji1FQ/edit?usp=sharing)_
 
-_[****NEW: Check out the video walkthrough of our analysis!****](test.macrodawg.com/futureperfect.mp4)_
+_[****NEW: Check out the video walkthrough of our analysis!****](https://test.macrodawg.com/futureperfect.mp4)_
 
 
 <p align="center">
