@@ -1,11 +1,11 @@
 # Master Modeler 2021 
 ## The Future Perfect: A Community Forward Approach to ERASE Child Trafficking 
 _[****NEW: Check out our slide deck!****](https://docs.google.com/presentation/d/19SPfwN32y4M_-oad14gpWVdvJBZjMOaD1NKWL0Ji1FQ/edit?usp=sharing)_
+_[****NEW: Check out our video walkthrough of our analysis!****](test.macrodawg.com/futureperfect.mp4)_
 
 <p align="center">
   <img src="https://github.com/macrodawg/thefutureperfect/blob/main/images/futureperfectreadme.png" width="350" title="The Future Perfect: Building a Better, Safer Future">
 </p>
-
 
 ### Team Members:
 <p align="center">
