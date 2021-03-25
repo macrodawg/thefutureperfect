@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-#### Jasmine Cui, Danielle Handel, Kellen Sandvik 
+Jasmine Cui, Danielle Handel, Kellen Sandvik 
 </p>
 
 ### Ethos 
