@@ -22,7 +22,8 @@ library(ggthemes)
 ``` 
 
 # Data Exploration
-First, we want to explore ERASE's current emotional approach. We choose to begin by with a macro-level breakdown of which direction ERASE's posts tend to lean towards, generating a histogram which illustrates the frequency with which ERASE opts for a positive, negative, or neutral post tone. 
+First, we want to explore ERASE's current emotional approach. We choose to begin by with a macro-level breakdown of which direction ERASE's posts tend to lean towards, generating a histogram which illustrates the frequency with which ERASE opts for a positive, negative, or neutral post tone.
+
 ```{r include = FALSE}
 # Load Data 
 futurePerfectFeature = 
@@ -45,6 +46,7 @@ print(emotionFreqPlot)
 ```
 
 From this, it would seem that many of ERASE's posts adopt a positive tone -- below, we can see from the following contingency table that, indeed, a large portion of posts are positive in tone. 
+
 ```{r message = FALSE, results = 'asis'}
 emotionFrequencies = 
   emotionType %>% 
@@ -60,7 +62,8 @@ emotionFrequencyTable =
   print(., type = 'html')
 ```
 
-Of course, as analysts we are interested in more than simply post emotion -- we also want to know how this relates to things like user engagement. 
+Of course, as analysts we are interested in more than simply post emotion -- we also want to know how this relates to things like user engagement.
+
 ```{r message = FALSE}
 emotionBox = 
   emotionType %>% 
@@ -77,6 +80,7 @@ print(emotionBox)
 ```
 
 Additionally, there are other dimensions to emotion beyond type. For instance, we may also want to look at emotional intensity and how both the type of emotion and its magnitude are related to user engagement.  
+
 ```{r message = FALSE}
 emotionIntensity = 
   emotionType %>% 
@@ -93,6 +97,7 @@ print(emotionIntensity)
 ```
 
 We can also look at the relationship between the time content is posted and how successful it ends up being in terms of engagement.
+
 ```{r message = FALSE}
 postTime = 
   emotionType %>%
@@ -111,6 +116,7 @@ postTime =
 ```
 
 Here, we can use OLS estimation to identify the effect of the time a post is made on a post's success in terms of engagement 
+
 ```{r message = FALSE}
 engagementTime = 
   lm(engagements ~ is_created_night + is_created_afternoon + is_created_evening, data = emotionType) %>% 
@@ -118,6 +124,7 @@ engagementTime =
 ```
 
 Elaborating on this, we might also be interested in post timing with relation to other posts; if one post goes viral, it may be the case that the attention this post brings to ERASE's Facebook page also brings attention to immediately subsequent posts.
+
 ```{r message = FALSE} 
 engagementLag = 
   futurePerfectFeature %>% 
@@ -132,6 +139,7 @@ engagementLag =
   
 print(engagementLag)
 ```
+
 Clearly, there is a kind of relationship between the level of success a post achieves and that of the post after it and, furthermore, this relationship is approximately linear. 
 
 # The Particulars: A "Partialed Out" approach to modeling social media efficacy 
@@ -206,7 +214,6 @@ integratedModel %>%
   xtable(.) %>% 
   print(., type = 'html')
 ```
-
 
 Ultimately, this integrated model can be developed into something like the following form which I have created. 
 
