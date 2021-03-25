@@ -1,0 +1,255 @@
+---
+title: "Future Perfect Models"
+author: 'Document Author: Jasmine Cui'
+output:
+  html_document:
+    toc: yes
+  'html_document:': default
+---
+
+```{r message = FALSE}
+# Uncomment and run the following four lines to install necessary packages 
+# install.packages('tidyverse')
+# install.packages('dplyr')
+# install.packages('ggplot2')
+# install.packages('xtable')
+# install.packages('ggthemes')
+
+# Load libraries
+library(tidyverse)
+library(xtable)
+library(ggthemes)
+``` 
+
+# Data Exploration
+First, we want to explore ERASE's current emotional approach. We choose to begin by with a macro-level breakdown of which direction ERASE's posts tend to lean towards, generating a histogram which illustrates the frequency with which ERASE opts for a positive, negative, or neutral post tone.
+
+```{r include = FALSE}
+# Load Data 
+futurePerfectFeature = 
+  read_csv('https://raw.githubusercontent.com/macrodawg/thefutureperfect/main/data-for-model/features-data.csv') 
+
+# Primary Emotion Type 
+emotionType = 
+  futurePerfectFeature %>% 
+  dplyr::filter(., text_primary_emotion != '0') 
+  
+emotionFreqPlot = 
+  ggplot(data = emotionType, aes(text_primary_emotion, fill = text_primary_emotion)) + 
+  geom_bar() + 
+  xlab('Primary Post Emotion Type') + 
+  ylab('Number of Posts') + 
+  ggtitle('Distribution of Posts by Primary Emotion Category', subtitle = 'Based on ERASE\'s FB Post History') + 
+  guides(fill = guide_legend(title = 'Primary Post Emotion Type'))
+
+print(emotionFreqPlot)
+```
+
+From this, it would seem that many of ERASE's posts adopt a positive tone -- below, we can see from the following contingency table that, indeed, a large portion of posts are positive in tone. 
+
+```{r message = FALSE, results = 'asis'}
+emotionFrequencies = 
+  emotionType %>% 
+  dplyr::group_by(., text_primary_emotion) %>% 
+  dplyr::summarize(., n = n()) %>% 
+  pivot_wider(., names_from = text_primary_emotion, values_from = n) %>% 
+  dplyr::mutate(., total = negative + neutral + positive) %>% 
+  dplyr::transmute(., negativePCT = negative/total, positivePCT = positive/total, neutralPCT = neutral/total) 
+
+emotionFrequencyTable = 
+  emotionFrequencies %>% 
+  xtable(.) %>% 
+  print(., type = 'html')
+```
+
+Of course, as analysts we are interested in more than simply post emotion -- we also want to know how this relates to things like user engagement.
+
+```{r message = FALSE}
+emotionBox = 
+  emotionType %>% 
+  dplyr::mutate(., logEngagement = log10(emotionType$engagements)) %>% 
+  ggplot() + 
+  geom_boxplot(aes(x = sort(factor(text_primary_emotion)), y = logEngagement)) + 
+  geom_point(aes(x = sort(factor(text_primary_emotion)), y = logEngagement)) + 
+  xlab('Primary Post Emotion Type') + 
+  ylab('Engagement Levels (Log Transformed)') + 
+  ggtitle('Overview of Post Engagement Levels by Primary Emotion', subtitle = 'Based on ERASE\'s FB Post History') + 
+  theme_economist()
+
+print(emotionBox)
+```
+
+Additionally, there are other dimensions to emotion beyond type. For instance, we may also want to look at emotional intensity and how both the type of emotion and its magnitude are related to user engagement.  
+
+```{r message = FALSE}
+emotionIntensity = 
+  emotionType %>% 
+  dplyr::mutate(., logEngagement = log10(engagements)) %>% 
+  dplyr::filter(., logEngagement >= 0) %>% 
+  ggplot(.) + 
+  geom_point(aes(x = text_emotional_intensity, y = logEngagement, color = text_primary_emotion)) + 
+  xlab('Engagement by Emotion Type and Intensity') + 
+  ylab('Engagement (Log Transformed)') + 
+  ggtitle('Engagement Overview by Primary Emotion and Intensity', subtitle = 'Based on ERASE\'s FB Post History') + 
+  labs(color = 'Primary Post Emotion Type') 
+  
+print(emotionIntensity)
+```
+
+We can also look at the relationship between the time content is posted and how successful it ends up being in terms of engagement.
+
+```{r message = FALSE}
+postTime = 
+  emotionType %>%
+  dplyr::mutate(., created_time = ifelse(is_created_night == 1, 'night', created_time)) %>%
+  dplyr::mutate(., created_time = ifelse(is_created_evening == 1, 'evening', created_time)) %>%
+  dplyr::mutate(., created_time = ifelse(is_created_morning == 1, 'morning', created_time)) %>% 
+  dplyr::mutate(., created_time = ifelse(is_created_afternoon == 1, 'afternoon', created_time)) %>% 
+  dplyr::mutate(., logEngagement = log10(emotionType$engagements)) %>% 
+  ggplot() + 
+  geom_boxplot(aes(y = logEngagement)) + 
+  facet_wrap(~ created_time) + 
+  xlab(NULL) + 
+  ylab('Engagement (Log Transformed)') + 
+  ggtitle('Post Engagement by at Different Times of Day', subtitle = 'Based on ERASE\'s FB Post History') + 
+  theme_economist()
+```
+
+Here, we can use OLS estimation to identify the effect of the time a post is made on a post's success in terms of engagement 
+
+```{r message = FALSE}
+engagementTime = 
+  lm(engagements ~ is_created_night + is_created_afternoon + is_created_evening, data = emotionType) %>% 
+  summary(.)
+```
+
+Elaborating on this, we might also be interested in post timing with relation to other posts; if one post goes viral, it may be the case that the attention this post brings to ERASE's Facebook page also brings attention to immediately subsequent posts.
+
+```{r message = FALSE} 
+engagementLag = 
+  futurePerfectFeature %>% 
+  dplyr::mutate(., log_engagements_last_post = log10(engagements_last_post), log_engagements = log10(engagements)) %>% 
+  ggplot(.) + 
+  geom_point(aes(x = log_engagements_last_post, y = log_engagements)) + 
+  xlab('Engagement Level of Prior Post (Log Transformed)') + 
+  ylab('Engagement Level of Current Post (Log Transformed)') + 
+  ggtitle('Post Momentum Visualization', subtitle = 'Based on ERASE\'s FB Post History') + 
+  geom_smooth(method = 'lm', aes(x = log_engagements_last_post, y = log_engagements)) + 
+  theme_economist()
+  
+print(engagementLag)
+```
+
+Clearly, there is a kind of relationship between the level of success a post achieves and that of the post after it and, furthermore, this relationship is approximately linear. 
+
+# The Particulars: A "Partialed Out" approach to modeling social media efficacy 
+```{r message = FALSE}
+# I opted not to apply a log-linear transformation to engagement because ERASE's goal is to try and produce more "outlier" posts -- posts with extremely high engagement. However, if this priority changes, it may be useful to apply a log transformation to the engagements variable. 
+
+# Time
+# Engagement conceptualized as a function of post-creation time 
+timeReg = 
+  lm(engagements ~ is_created_night + is_created_afternoon + is_created_evening, data = futurePerfectFeature) %>%
+  summary(.)
+
+timeReg 
+
+# Momentum/Timing
+# Engagement conceptualized as a function of the engagement level of preceding post 
+momentumReg = 
+  lm(engagements ~ engagements_last_post, data = futurePerfectFeature) %>% 
+  summary(.)
+
+momentumReg
+
+# Emotion + Emotional Intensity 
+# Engagement conceptualized as a function of both emotion and the intensity with which it is expressed 
+emotionReg = 
+  futurePerfectFeature %>% 
+  dplyr::mutate(., isPositive = ifelse(text_primary_emotion == 'Positive', 1, text_primary_emotion)) %>%
+  dplyr::mutate(., isNegative = ifelse(text_primary_emotion == 'Negative', 1, text_primary_emotion)) %>% 
+  lm(engagements ~ text_emotional_intensity + isPositive + isNegative, .) %>% 
+  summary(.)
+
+emotionReg
+
+# Photo
+# Engagement conceptualized as a function of whether or not a post has a photograph or not 
+photoReg = 
+  lm(engagements ~ is_photo, data = futurePerfectFeature) %>% 
+  summary(.)
+
+photoReg
+
+# Text Length 
+# Engagement conceptualized as a function of text length 
+textLengthReg = 
+  lm(engagements ~ text_length, data = futurePerfectFeature) %>% 
+  summary(.)
+
+textLengthReg
+```
+
+# The Bigger Picture: A fully integrated OLS estimation approach to modeling social media efficacy
+Here, instead of having a series of equations, we will use an integrated model. The drawback of this model over the "partialed out" approach lies in the fact that the inclusion of many covariates increases the likelihood of different model covariates being collinear. In other words, one variable introduces the same information as another and can potentially blur the true nature of the relationship between engagement and certain covariates. 
+
+This tradeoff, however, does have a positive. By integrating the model, we now have a DGP (data generating process) which can be used for forecasting. Here, one idea is to dynamically generate the forecast matrix using the OLS estimated specification and historical data. 
+
+```{r message = FALSE, results = "asis"}
+# Integrated OLS Model 
+integratedModel = 
+  futurePerfectFeature %>% 
+  dplyr::mutate(., isPositive = ifelse(text_primary_emotion == 'Positive', 1, text_primary_emotion)) %>%
+  dplyr::mutate(., isNegative = ifelse(text_primary_emotion == 'Negative', 1, text_primary_emotion)) %>% 
+  lm(engagements ~ is_created_night + 
+       is_created_afternoon + 
+       is_created_evening + 
+       engagements_last_post + 
+       isPositive + isNegative + 
+       is_photo + 
+       text_length, .) %>% 
+    summary(.) 
+
+integratedModel %>% 
+  xtable(.) %>% 
+  print(., type = 'html')
+```
+
+Ultimately, this integrated model can be developed into something like the following form which I have created. 
+
+Effectively, ERASE will be able to input things like the text of their post, planned post time, and whether or not the post will have certain features like a photograph or emojis. With even further development, this form can do things like suggest steps ERASE can take to optimize their planned post so that the tool is even more user friendly. 
+# Success Prediction Form Skeleton 
+```{r}
+is_Created_night = 
+is_Created_afternoon = 
+is_Created_evening = 
+
+
+```
+
+
+# The Bigger, Better Picture: A random forest approach to modeling social media efficacy 
+Like the previous model, this random forest model can also be used build to build a form which will predict the likelihood of a post "succeeding." However, unlike the previous model, this approach uses machine learning to cycle through decision trees, ultimately constructing the model's functional form for the end user in addition to estimating the model's coefficients. 
+
+LOOCV and k-fold cross-validation will be crucial as well in avoiding overfitting. 
+```{r}
+# ERASERandomForest = 
+#   xgboost(data = emotionType %>% 
+#   dplyr::select(is_created_morning, is_created_afternoon,is_created_evening, is_created_night, text_emotional_intensity) %>% 
+#    as.matrix(.), label = emotionType$engagements, nrounds = 5)
+
+# Look in the xgboost package for more functions to extract the relevant data; this modeling approach will become particularly useful when more data is scraped about different "near and peer" pages
+```
+
+# Hot or Not: A probit regression approach to modeling social media efficacy
+This can be used to build a model which will predict the likelihood of a post going viral. This might be useful if ERASE decides to focus, specifically, on 
+```{r}
+# isSuccessful = 
+# isNotSuccessful 
+```
+
+# Final Touches + Interpretation
+```{r}
+
+```
+
