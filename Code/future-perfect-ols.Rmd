@@ -1,34 +1,35 @@
 ---
 title: "Future Perfect Model"
-author: "Jasmine Cui"
-date: "3/21/2021"
-output: html_document
+author: 'Document Author: Jasmine Cui'
+output:
+  html_document:
+    toc: yes
+  'html_document:': default
 ---
 
-# Load Libraries 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r message = FALSE}
 # Uncomment and run the following four lines to install necessary packages 
 # install.packages('tidyverse')
 # install.packages('dplyr')
 # install.packages('ggplot2')
+# install.packages('xtable')
 # devtools::install_github('Mikata-Project/ggthemr') 
 
-library('tidyverse')
-library('dplyr')
-library('ggplot2')
-library('ggthemr')
+# Load libraries
+library(tidyverse)
+library(xtable)
+library(ggthemr)
 
+# Set .rmd theme 
 ggthemr('fresh')
 ``` 
 
 # Data Exploration
-```{r, message = FALSE}
+First, we want to explore ERASE's current emotional approach. We choose to begin by with a macro-level breakdown of which direction ERASE's posts tend to lean towards, generating a histogram which illustrates the frequency with which ERASE opts for a positive, negative, or neutral post tone. 
+```{r include = FALSE}
 # Load Data 
 futurePerfectFeature = 
   read_csv('https://raw.githubusercontent.com/macrodawg/thefutureperfect/main/features-data.csv') 
-
-# First, we want to explore ERASE's current emotional approach. We choose to begin by with a macro-level breakdown of which direction ERASE's posts tend to lean towards, generating a histogram which illustrates the frequency with which ERASE opts for a positive, negative, or neutral post tone. 
 
 # Primary Emotion Type 
 emotionType = 
@@ -38,21 +39,62 @@ emotionType =
 emotionFreqPlot = 
   ggplot(data = emotionType, aes(text_primary_emotion, fill = text_primary_emotion)) + 
   geom_bar() + 
-  xlab('Primary Emotion Type of Post') + 
+  xlab('Primary Post Emotion Type') + 
   ylab('Number of Posts') + 
   ggtitle('Distribution of Posts by Primary Emotion Category', subtitle = 'Based on ERASE\'s FB Post History') + 
   guides(fill = guide_legend(title = 'Primary Post Emotion Type'))
 
 print(emotionFreqPlot)
+```
 
-# From this, it would seem that many of ERASE's posts adopt a positive tone. 
+From this, it would seem that many of ERASE's posts adopt a positive tone -- below, we can see from the following contingency table that, indeed, a large portion of posts are positive in tone. 
+```{r message = FALSE, results = 'asis'}
+emotionFrequencies = 
+  emotionType %>% 
+  dplyr::group_by(., text_primary_emotion) %>% 
+  dplyr::summarize(., n = n()) %>% 
+  pivot_wider(., names_from = text_primary_emotion, values_from = n) %>% 
+  dplyr::mutate(., total = negative + neutral + positive) %>% 
+  dplyr::transmute(., negativePCT = negative/total, positivePCT = positive/total, neutralPCT = neutral/total) 
 
+emotionFrequencyTable = 
+  emotionFrequencies %>% 
+  xtable(.) %>% 
+  print(., type = 'html')
+```
 
+Of course, as analysts we are interested in more than simply post emotion -- we also want to know how this relates to things like user engagement. 
+```{r message = FALSE}
+emotionBox = 
+  emotionType %>% 
+  dplyr::mutate(., logEngagement = log10(emotionType$engagements)) %>% 
+  ggplot() + 
+  geom_boxplot(aes(x = sort(factor(text_primary_emotion)), y = logEngagement)) + 
+  geom_point(aes(x = sort(factor(text_primary_emotion)), y = logEngagement)) + 
+  xlab('Primary Post Emotion Type') + 
+  ylab('Engagement Levels (Log Transformed)') + 
+  ggtitle('Overview of Post Engagement Levels by Primary Emotion', subtitle = 'Based on ERASE\'s FB Post History')
 
+print(emotionBox)
+```
+
+Additionally, there are other dimensions to emotion beyond type. For instance, we may also want to look at emotional intensity and how both the type of emotion and its magnitude are related to user engagement.  
+```{r message = FALSE}
+emotionIntensity = 
+  emotionType %>% 
+  dplyr::mutate(., logEngagement = log(engagements), emotion = text_primary_emotion) %>% 
+  ggplot() + 
+  geom_point(aes(x = text_emotional_intensity, y = logEngagement, color = text_primary_emotion)) 
+
+print(emotionIntensity)
+```
+
+# Building up the Model 
+```{r}
 
 ```
 
-
+# Final Touches + Interpretation
 ```{r}
 
 ```

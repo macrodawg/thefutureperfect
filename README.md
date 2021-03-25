@@ -26,5 +26,11 @@
 
 #### By helping ERASE expand and refine their social media approach we hope to play our small role in helping restore not only the safety, but also the dignity young, vulnerable people deserve. 
 
-### Model 
+### Baseline Model Overview
+
+
+### Random Forest Model Overview 
+
+
+### Made With: R, Python, Jupyter 
 
