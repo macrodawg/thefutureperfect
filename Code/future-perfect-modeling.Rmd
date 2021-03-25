@@ -108,8 +108,6 @@ postTime =
   ylab('Engagement (Log Transformed)') + 
   ggtitle('Post Engagement by at Different Times of Day', subtitle = 'Based on ERASE\'s FB Post History') + 
   theme_economist()
-
-print(emotionTime)
 ```
 
 Here, we can use OLS estimation to identify the effect of the time a post is made on a post's success in terms of engagement 
@@ -120,7 +118,7 @@ engagementTime =
 ```
 
 Elaborating on this, we might also be interested in post timing with relation to other posts; if one post goes viral, it may be the case that the attention this post brings to ERASE's Facebook page also brings attention to immediately subsequent posts.
-```{r} 
+```{r message = FALSE} 
 engagementLag = 
   futurePerfectFeature %>% 
   dplyr::mutate(., log_engagements_last_post = log10(engagements_last_post), log_engagements = log10(engagements)) %>% 
@@ -183,30 +181,64 @@ textLengthReg =
 
 textLengthReg
 ```
-# The Bigger Picture: A fully integrated OLS estimation approach to modeling social media efficacy
-```{r }
 
+# The Bigger Picture: A fully integrated OLS estimation approach to modeling social media efficacy
+Here, instead of having a series of equations, we will use an integrated model. The drawback of this model over the "partialed out" approach lies in the fact that the inclusion of many covariates increases the likelihood of different model covariates being collinear. In other words, one variable introduces the same information as another and can potentially blur the true nature of the relationship between engagement and certain covariates. 
+
+This tradeoff, however, does have a positive. By integrating the model, we now have a DGP (data generating process) which can be used for forecasting. Here, one idea is to dynamically generate the forecast matrix using the OLS estimated specification and historical data. 
+
+```{r message = FALSE, results = "asis"}
+# Integrated OLS Model 
+integratedModel = 
+  futurePerfectFeature %>% 
+  dplyr::mutate(., isPositive = ifelse(text_primary_emotion == 'Positive', 1, text_primary_emotion)) %>%
+  dplyr::mutate(., isNegative = ifelse(text_primary_emotion == 'Negative', 1, text_primary_emotion)) %>% 
+  lm(engagements ~ is_created_night + 
+       is_created_afternoon + 
+       is_created_evening + 
+       engagements_last_post + 
+       isPositive + isNegative + 
+       is_photo + 
+       text_length, .) %>% 
+    summary(.) 
+
+integratedModel %>% 
+  xtable(.) %>% 
+  print(., type = 'html')
 ```
 
 
+Ultimately, this integrated model can be developed into something like the following form which I have created. 
+
+Effectively, ERASE will be able to input things like the text of their post, planned post time, and whether or not the post will have certain features like a photograph or emojis. With even further development, this form can do things like suggest steps ERASE can take to optimize their planned post so that the tool is even more user friendly. 
 # Success Prediction Form Skeleton 
 ```{r}
+is_Created_night = 
+is_Created_afternoon = 
+is_Created_evening = 
+
 
 ```
 
-# Random Forest Model -- this can be used build a model which will predict the likelihood of a post succeeding
-```{r}
-ERASERandomForest = 
-  xgboost(data = emotionType %>% 
-            dplyr::select(is_created_morning, is_created_afternoon,is_created_evening, is_created_night, text_emotional_intensity) %>% as.matrix(.), label = emotionType$engagements, nrounds = 5)
 
-# Look in the xgboost package for more functions to extract the relevant data 
+# The Bigger, Better Picture: A random forest approach to modeling social media efficacy 
+Like the previous model, this random forest model can also be used build to build a form which will predict the likelihood of a post "succeeding." However, unlike the previous model, this approach uses machine learning to cycle through decision trees, ultimately constructing the model's functional form for the end user in addition to estimating the model's coefficients. 
+
+LOOCV and k-fold cross-validation will be crucial as well in avoiding overfitting. 
+```{r}
+# ERASERandomForest = 
+#   xgboost(data = emotionType %>% 
+#   dplyr::select(is_created_morning, is_created_afternoon,is_created_evening, is_created_night, text_emotional_intensity) %>% 
+#    as.matrix(.), label = emotionType$engagements, nrounds = 5)
+
+# Look in the xgboost package for more functions to extract the relevant data; this modeling approach will become particularly useful when more data is scraped about different "near and peer" pages
 ```
 
-# Probit Model -- this can be used to build a model which will predict the likelihood of a post going viral 
+# Hot or Not: A probit regression approach to modeling social media efficacy
+This can be used to build a model which will predict the likelihood of a post going viral. This might be useful if ERASE decides to focus, specifically, on 
 ```{r}
-isSuccessful = 
-isNotSuccessful 
+# isSuccessful = 
+# isNotSuccessful 
 ```
 
 # Final Touches + Interpretation
