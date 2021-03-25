@@ -1,0 +1,212 @@
+# Set constants
+```{r}
+DIR = 'D:/Onedrive/__Projects/jasmine-project-futureperfect' # Set to directory of desired file export
+```
+
+# Load libraries
+```{r}
+library(tidyverse)
+library(data.table)
+library(lubridate)
+library(httr)
+library(tidytext)
+```
+
+# Scrape raw data from graph API
+```{r}
+local({
+# FB Data 
+access_token =
+	'EABCtUs97lNIBANP2aNHVkiASou2e45gPPt0nr4iRraHNqh2VXZC8C8W3ZASylapyvPITnzvh2txsRRak7BAvZCnnMudnBAuHBBrEqk3xO1xlAr7sB68gpd5H7Mq1570foXdmm9BSzKHYbE5NT43oyFKPuF4zje3KJTt50s6yAq0FKVBeVm2YNIlo9TiECSj6sHcyY6rJ7o3HRK52BBYZCQhwZACrb2VnMDWa8v8cinQZDZD'
+
+
+# https://stackoverflow.com/questions/36906590/getting-facebook-post-all-reactions-count-in-single-graph-api-request
+# https://developers.facebook.com/docs/graph-api/reference/post/
+# https://developers.facebook.com/docs/graph-api/reference/pagepost
+pageData = list()
+for (i in 1:30) {
+	
+	message('Getting posts ', (i - 1) * 100, ' to ', i * 100)
+	
+	if (i == 1) {
+    	pageContent =
+			GET(
+			    'https://graph.facebook.com',
+			    path = '/helperase/posts',
+			    query = list(
+			    	fields = '
+			    	id,
+			    	created_time,
+			    	permalink_url,
+			    	status_type,
+			    	full_picture,
+			    	icon,
+			    	story,
+			    	message_tags,
+			    	message,
+			    	shares,
+			    	reactions.type(LIKE).limit(0).summary(total_count).as(like),
+			    	reactions.type(LOVE).limit(0).summary(total_count).as(love),
+			    	reactions.type(HAHA).limit(0).summary(total_count).as(haha),
+			    	reactions.type(WOW).limit(0).summary(total_count).as(wow),
+			    	reactions.type(SAD).limit(0).summary(total_count).as(sad),
+			    	reactions.type(ANGRY).limit(0).summary(total_count).as(angry)
+			    	',
+			    	access_token = access_token,
+			    	limit = 100
+			    	)
+			) %>% content(.) 
+    } else {
+    	pageContent = GET(nextPageUrl) %>% content(.)
+	}
+  
+	
+	pageData[[i]] =
+		pageContent$data %>%
+		lapply(., function(x)
+			# Fix issue with nested lists for reactions
+			x %>%
+				purrr::imap(., function(z, i) {
+					if('summary' %in% names(z)) z$summary$total_count
+					else if ('count' %in% names(z)) z$count 
+					else if (i == 'message_tags') map(z, ~ .$name) %>% paste0(., collapse = ' ')
+					else z
+					}) %>%
+				as_tibble(.)
+			) %>%
+		dplyr::bind_rows(.)
+	
+	message(i, pageContent$paging)
+	
+	nextPageUrl = pageContent$paging$'next'
+}
+
+
+
+	emojiReplacements = {setNames(paste0(' [', names(emo::ji_name), '] '), emo::ji_name)} %>% .[1:3500]
+	pageDf =
+		dplyr::bind_rows(pageData) %>%
+		# Convert unicode emojis to [emoji_description]
+		dplyr::mutate(., message = str_replace_all(message, emojiReplacements)) %>%
+		# Fix other weird characters
+		dplyr::mutate(., message = str_replace_all(message, coll('’'), '\''), message = str_replace_all(message, coll('‘'), '\'')) %>%
+		dplyr::mutate(., message = str_replace_all(message, coll('“'), '"'), message = str_replace_all(message, coll('”'), '"')) %>%
+		dplyr::mutate(., message = str_replace_all(message, coll('–'), '-')) %>%
+		dplyr::mutate(., message = str_replace_all(message, coll('—'), '-')) %>%
+		dplyr::mutate(., message = str_replace_all(message, coll(' ￼'), ' ')) %>%
+		# Strip remaining non-ASCII text completely
+		dplyr::mutate(., message = iconv(message, from = 'utf-8', 'ASCII', sub = '')) %>%
+		dplyr::mutate(., message = str_replace_all(message, coll('_'), '')) %>%
+		# Replace linebreaks with spaces
+		dplyr::mutate(., message = str_replace_all(message, coll('\n'), ' ')) %>%
+		# Now parse dates into R date format and convert to Eastern time
+    	dplyr::mutate(., created_time = parse_date_time2(created_time, '%Y-%m-%d%H:%M:%S+%z', tz = 'UTC') %>% with_tz(., 'America/New_York')) %>%
+		# Now create 'engagements column' by summing all reactions + shares	
+		dplyr::mutate(., shares = replace_na(shares, 0)) %>%
+		dplyr::mutate(., engagements = shares + like + love + haha + wow + sad + angry)
+
+	
+})
+```
+
+# Export raw data file
+```{r}
+fwrite(pageDf, file.path(DIR, 'raw-data.csv'))
+```
+
+
+
+# Feature extraction
+```{r}
+local({
+	
+	sentimentsDf =
+		get_sentiments('nrc') %>%
+		dplyr::mutate(
+			sentiment = ifelse(sentiment == 'disgust', 'negative', sentiment),
+			sentiment = ifelse(sentiment == 'sadness', 'negative', sentiment),
+			sentiment = ifelse(sentiment == 'joy', 'positive', sentiment),
+			sentiment = ifelse(sentiment == 'trust', 'positive', sentiment),
+			sentiment = ifelse(sentiment == 'surprise', 'neutral', sentiment),
+			sentiment = ifelse(sentiment == 'anticipation', 'neutral', sentiment),
+			sentiment = ifelse(sentiment == 'fear', 'negative', sentiment),
+			sentiment = ifelse(sentiment == 'anger', 'negative', sentiment)
+		)
+
+	miscFeatures =
+		pageDf %>%
+		dplyr::arrange(., created_time) %>%
+		dplyr::transmute(
+			.,
+			id,
+			is_video = ifelse(status_type == 'added_video', 1, 0),
+			is_story = ifelse(status_type == 'shared_story', 1, 0),
+			is_mobile_status_update = ifelse(status_type == 'mobile_status_update', 1, 0),
+			is_photo = ifelse(status_type == 'added_photos', 1, 0),
+			created_weekday = lubridate::wday(created_time), # 1 = Sun, 7 = Sat
+			is_created_morning = ifelse(lubridate::hour(created_time) %in% 5:10, 1, 0),
+			is_created_afternoon = ifelse(lubridate::hour(created_time) %in% 11:16, 1, 0),
+			is_created_evening = ifelse(lubridate::hour(created_time) %in% 17:20, 1, 0),
+			is_created_night = ifelse(lubridate::hour(created_time) %in% c(21:24, 0:4), 1, 0),
+			hours_since_last_post = as.numeric(difftime(created_time, dplyr::lag(created_time, 1), units = 'hours')), 
+			engagements_last_post = dplyr::lag(engagements, 1)
+			)
+	
+	
+	data(stop_words)
+	
+	textSentimentFeatures =
+		pageDf %>%
+		dplyr::select(., id, message) %>%
+		tidytext::unnest_tokens(., word, message) %>%
+		dplyr::anti_join(., stop_words, by = 'word') %>%
+		dplyr::inner_join(., sentimentsDf, by = 'word') %>%
+		dplyr::left_join(
+			.,
+			dplyr::group_by(., id) %>%
+				dplyr::summarize(., postTotal = n(), .groups = 'drop'),
+			by = 'id'
+		) %>%
+		dplyr::group_by(., sentiment, id) %>%
+		dplyr::summarize(., count = n(), postTotal = unique(postTotal), .groups = 'drop') %>%
+		dplyr::mutate(., percent = count/postTotal) %>%
+		# Get predominant emotion
+		dplyr::group_by(., id) %>%
+		dplyr::filter(., percent == max(percent)) %>%
+		dplyr::summarize(., text_emotional_intensity = head(percent, 1), text_primary_emotion = head(sentiment, 1))
+	
+	textOtherFeatures =
+		pageDf %>%
+	    dplyr::transmute(
+	        .,
+	        id, 
+	        text_has_hastag = ifelse(str_detect(message, coll('#')) == TRUE, 1, 0),
+	        text_has_hastag = ifelse(is.na(text_has_hastag), 0, text_has_hastag),
+			text_num_hashtags = ifelse(is.na(message_tags), 0, str_count(message, coll('#'))),
+	        text_length = str_count(message, '\\S+'),
+			text_length = ifelse(is.na(text_length), 0, text_length),
+	        text_missing_notice = ifelse(str_detect(message, regex('#missing|#Missing|#pleaseshare|#PleaseShare|FoundSafe|Safe')) == TRUE, 1, 0),
+			text_missing_notice = ifelse(is.na(text_missing_notice), 0, text_missing_notice)
+	    )
+	
+	featuresDf =
+		pageDf %>%
+		dplyr::full_join(., miscFeatures, by = 'id') %>%
+		dplyr::full_join(., textSentimentFeatures, by = 'id') %>%
+		dplyr::full_join(., textOtherFeatures, by = 'id') %>%
+		dplyr::mutate(
+			.,
+			text_emotional_intensity = ifelse(is.na(text_emotional_intensity), 0, text_emotional_intensity),
+			text_primary_emotion = ifelse(is.na(text_primary_emotion), 0, text_primary_emotion)
+		)
+
+})
+```
+
+
+# Features df
+```{r}
+fwrite(featuresDf, file.path(DIR, 'features-data.csv'))
+```
+
+
