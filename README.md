@@ -58,6 +58,10 @@ From a macro-perspective, these models are used to replicate, albeit simplistica
 As humans, while we have incredible intuition, we are limited by or physical needs. Consequently, we are equipped to see the trees and to understand them in detail. 
 However, our capacity for insight is turbocharged by the power of modern technology. Through machine learning we take flight — suddenly, understanding the forest becomes a possibility. 
 
+<p align="center">
+  <img src="https://github.com/macrodawg/thefutureperfect/blob/main/images/hashtags.png" width="300" title="Hashtag success!">
+</p>
+
 ### Plans For the Future: 
 Ideally, we would love to continue to work with ERASE to extend the models we have built into **user-friendly tools** that will empower their team to continue drawing insights and refining their social media strategy beyond the scope of this competition. We have sketched out some ideas of how each model might be deployed and built into a dashboard. This would allow ERASE improve their strategy autonomously. For non-profits, autonomy is vital. 
 
