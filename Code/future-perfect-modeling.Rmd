@@ -26,7 +26,7 @@ First, we want to explore ERASE's current emotional approach. We choose to begin
 ```{r include = FALSE}
 # Load Data 
 futurePerfectFeature = 
-  read_csv('https://raw.githubusercontent.com/macrodawg/thefutureperfect/main/features-data.csv') 
+  read_csv('https://raw.githubusercontent.com/macrodawg/thefutureperfect/main/data-for-model/features-data.csv') 
 
 # Primary Emotion Type 
 emotionType = 
@@ -70,7 +70,8 @@ emotionBox =
   geom_point(aes(x = sort(factor(text_primary_emotion)), y = logEngagement)) + 
   xlab('Primary Post Emotion Type') + 
   ylab('Engagement Levels (Log Transformed)') + 
-  ggtitle('Overview of Post Engagement Levels by Primary Emotion', subtitle = 'Based on ERASE\'s FB Post History')
+  ggtitle('Overview of Post Engagement Levels by Primary Emotion', subtitle = 'Based on ERASE\'s FB Post History') + 
+  theme_economist()
 
 print(emotionBox)
 ```
@@ -93,7 +94,7 @@ print(emotionIntensity)
 
 We can also look at the relationship between the time content is posted and how successful it ends up being in terms of engagement.
 ```{r message = FALSE}
-emotionTime = 
+postTime = 
   emotionType %>%
   dplyr::mutate(., created_time = ifelse(is_created_night == 1, 'night', created_time)) %>%
   dplyr::mutate(., created_time = ifelse(is_created_evening == 1, 'evening', created_time)) %>%
@@ -105,16 +106,17 @@ emotionTime =
   facet_wrap(~ created_time) + 
   xlab(NULL) + 
   ylab('Engagement (Log Transformed)') + 
-  ggtitle('Post Engagement by Emotion at Different Times of Day', subtitle = 'Based on ERASE\'s FB Post History')
+  ggtitle('Post Engagement by at Different Times of Day', subtitle = 'Based on ERASE\'s FB Post History') + 
+  theme_economist()
 
 print(emotionTime)
 ```
 
 Here, we can use OLS estimation to identify the effect of the time a post is made on a post's success in terms of engagement 
-```{r}
+```{r message = FALSE}
 engagementTime = 
-  emotionType %>% 
-  lm(engagements ~ is_created_night + is_created_afternoon + is_created_evening, data = emotionType) %>% summary(.)
+  lm(engagements ~ is_created_night + is_created_afternoon + is_created_evening, data = emotionType) %>% 
+  summary(.)
 ```
 
 Elaborating on this, we might also be interested in post timing with relation to other posts; if one post goes viral, it may be the case that the attention this post brings to ERASE's Facebook page also brings attention to immediately subsequent posts.
@@ -126,28 +128,70 @@ engagementLag =
   geom_point(aes(x = log_engagements_last_post, y = log_engagements)) + 
   xlab('Engagement Level of Prior Post (Log Transformed)') + 
   ylab('Engagement Level of Current Post (Log Transformed)') + 
-  ggtitle('Post Engagement by Emotion at Different Times of Day', subtitle = 'Based on ERASE\'s FB Post History') + 
-  geom_smooth(method = 'lm', aes(x = log_engagements_last_post, y = log_engagements))
+  ggtitle('Post Momentum Visualization', subtitle = 'Based on ERASE\'s FB Post History') + 
+  geom_smooth(method = 'lm', aes(x = log_engagements_last_post, y = log_engagements)) + 
+  theme_economist()
   
 print(engagementLag)
 ```
 Clearly, there is a kind of relationship between the level of success a post achieves and that of the post after it and, furthermore, this relationship is approximately linear. 
 
-# Building up the Model 
-```{r}
-lm(engagements ~ is_created_night + is_created_afternoon + is_created_evening, data = emotionType) %>% summary(.)
+# The Particulars: A "Partialed Out" approach to modeling social media efficacy 
+```{r message = FALSE}
+# I opted not to apply a log-linear transformation to engagement because ERASE's goal is to try and produce more "outlier" posts -- posts with extremely high engagement. However, if this priority changes, it may be useful to apply a log transformation to the engagements variable. 
 
+# Time
+# Engagement conceptualized as a function of post-creation time 
+timeReg = 
+  lm(engagements ~ is_created_night + is_created_afternoon + is_created_evening, data = futurePerfectFeature) %>%
+  summary(.)
 
+timeReg 
+
+# Momentum/Timing
+# Engagement conceptualized as a function of the engagement level of preceding post 
+momentumReg = 
+  lm(engagements ~ engagements_last_post, data = futurePerfectFeature) %>% 
+  summary(.)
+
+momentumReg
+
+# Emotion + Emotional Intensity 
+# Engagement conceptualized as a function of both emotion and the intensity with which it is expressed 
+emotionReg = 
+  futurePerfectFeature %>% 
+  dplyr::mutate(., isPositive = ifelse(text_primary_emotion == 'Positive', 1, text_primary_emotion)) %>%
+  dplyr::mutate(., isNegative = ifelse(text_primary_emotion == 'Negative', 1, text_primary_emotion)) %>% 
+  lm(engagements ~ text_emotional_intensity + isPositive + isNegative, .) %>% 
+  summary(.)
+
+emotionReg
+
+# Photo
+# Engagement conceptualized as a function of whether or not a post has a photograph or not 
+photoReg = 
+  lm(engagements ~ is_photo, data = futurePerfectFeature) %>% 
+  summary(.)
+
+photoReg
+
+# Text Length 
+# Engagement conceptualized as a function of text length 
+textLengthReg = 
+  lm(engagements ~ text_length, data = futurePerfectFeature) %>% 
+  summary(.)
+
+textLengthReg
+```
+# The Bigger Picture: A fully integrated OLS estimation approach to modeling social media efficacy
+```{r }
 
 ```
 
-# Dashboard Skeleton 
+
+# Success Prediction Form Skeleton 
 ```{r}
-isAfternoon = 1 
-isnight =0 
 
-
-.34*afternoon
 ```
 
 # Random Forest Model -- this can be used build a model which will predict the likelihood of a post succeeding
