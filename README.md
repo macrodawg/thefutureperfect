@@ -59,7 +59,7 @@ As humans, while we have incredible intuition, we are limited by or physical nee
 However, our capacity for insight is turbocharged by the power of modern technology. Through machine learning we take flight — suddenly, understanding the forest becomes a possibility. 
 
 <p align="center">
-  <img src="https://github.com/macrodawg/thefutureperfect/blob/main/images/hashtags.png" width="500" title="Hashtag success!">
+  <img src="https://github.com/macrodawg/thefutureperfect/blob/main/images/hashtags.png" width="650" title="Hashtag success!">
 </p>
 
 ### Plans For the Future: 
