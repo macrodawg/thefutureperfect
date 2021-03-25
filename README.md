@@ -47,5 +47,5 @@ Finally, the Probit model we have specified speaks to the likelihood of a post a
 
 Regardless, our team hopes that ERASE Child Trafficking is able to make use of our insights. Our greatest hope is that our project is able to allow them to spread their word as **far** and **wide** as possible. 
 
-### Made With: R, Python, Jupyter 
+### Made With: R, Python, Jupyter, Love 
 
