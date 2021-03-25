@@ -205,7 +205,8 @@ integratedModel =
        is_created_afternoon + 
        is_created_evening + 
        engagements_last_post + 
-       isPositive + isNegative + 
+       isPositive + 
+       isNegative + 
        is_photo + 
        text_length, .) %>% 
     summary(.) 
@@ -218,13 +219,25 @@ integratedModel %>%
 Ultimately, this integrated model can be developed into something like the following form which I have created. 
 
 Effectively, ERASE will be able to input things like the text of their post, planned post time, and whether or not the post will have certain features like a photograph or emojis. With even further development, this form can do things like suggest steps ERASE can take to optimize their planned post so that the tool is even more user friendly. 
-# Success Prediction Form Skeleton 
+# Success Prediction Form Psuedocode 
 ```{r}
-is_Created_night = 
-is_Created_afternoon = 
-is_Created_evening = 
+# postText = ["Insert Desired Text"]
+# textLength = length[postText]
+# is_Created_night = [YES/NO]
+# is_Created_afternoon = [YES/NO]
+# is_Created_evening = [YES/NO] 
+# is_photo = [YES/NO]
+# isPositive = [YES/NO]
+# isNegative = [YES/NO]
+# engagementsLastPost = ["Insert Numeric Value"]
 
+# "This post is predicted to obtain _______ likes, 
+# _______ shares, and ______ views and comments 
+# for an overall engagement score of ____! 
 
+# We see you are posting this at 9 A.M., but could 
+# get more engagement if you post later in the evening -- 
+# would you like to reschedule your post?"
 ```
 
 
@@ -242,14 +255,21 @@ LOOCV and k-fold cross-validation will be crucial as well in avoiding overfittin
 ```
 
 # Hot or Not: A probit regression approach to modeling social media efficacy
-This can be used to build a model which will predict the likelihood of a post going viral. This might be useful if ERASE decides to focus, specifically, on 
+This can be used to build a model which will predict the likelihood of a post going viral. This might be useful if ERASE decides to focus, specifically, on a viral social media marketing approach. 
 ```{r}
-# isSuccessful = 
-# isNotSuccessful 
-```
+# viralRegDf = 
+#   futurePerfectFeature %>% 
+#   dplyr::mutate(., isViral = ifelse(engagements >= 500, 1, 0) %>% 
+#   glm(isViral ~ is_created_night + 
+#         is_created_afternoon + 
+#         is_created_evening + 
+#         engagements_last_post + 
+#         isPositive + 
+#         isNegative + 
+#         is_photo + 
+#         text_length, family = binomial(link = "probit"), .) %>% 
+#         summary(.))
 
-# Final Touches + Interpretation
-```{r}
-
+# viralRegDf
 ```
 
