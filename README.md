@@ -50,7 +50,7 @@ From a macro-perspective, these models are used to replicate, albeit simplistica
 ### Plans For the Future: 
 Ideally, we would love to continue to work with ERASE to extend the models we have built into **user-friendly tools** that will empower their team to continue drawing insights and refining their social media approach even beyond the scope of this competition. As of now, we have sketched out some ideas of how each model might be deployed and built into a dashboard which would allow ERASE to assess how well a post might do and to what extent. 
 
-Concretely, we would like use our web-scraper in conjunction with Facebook's graph API to generate a dynamic, updatable .RDS file which will then funnel the latest information into our models such that ERASE can understand how their social landscape is evolving in real time. However, we understand that this is outside of the scope of Master Modeler 2021. 
+Concretely, we would like use our web-scraper in conjunction with Facebook's graph API to generate a **dynamic and updatable** .RDS file which will then funnel the latest information into our models such that ERASE can understand how their social landscape is evolving **in real time**. However, we understand that this is outside of the scope of Master Modeler 2021. 
 
 Regardless, our team hopes that ERASE Child Trafficking is able to make use of our insights. Our greatest hope is that our project is able to allow them to spread their word as **far** and **wide** as possible. 
 
