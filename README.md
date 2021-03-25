@@ -34,6 +34,10 @@ By helping ERASE expand and refine their social media approach we hope to play o
 ### Modeling Overview:  
  _(Model is located in future-perfect-modeling.Rmd in the 'code' folder of this repository)_
  
+ <p align="center">
+  <img src="https://github.com/macrodawg/thefutureperfect/blob/main/images/datascience.jpg" width="300" title="Towards data science!">
+</p>
+  
  Within the scope of our project, there are four main models which we have developed and the use case for each is as follows: 
  
  1. For the Particulars: The **partial OLS models** can be used to elicit the causal relationships between a post's specific features and its likelihood of success. **This will allow ERASE to fine-tune their post strategy by empowering them hone in on specific features of their content and identify how this might be related to that post's potential for success in terms of user engagement.**
