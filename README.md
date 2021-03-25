@@ -27,7 +27,7 @@
 #### By helping ERASE expand and refine their social media approach we hope to play our small role in helping restore not only the safety, but also the dignity young, vulnerable people deserve. 
 
 ### Modeling Overview 
-#### _(Modeling Code Located in future-perfect-modeling.Rmd in the 'code' folder of this repository)_
+#### _(Model is located in future-perfect-modeling.Rmd in the 'code' folder of this repository)_
 
 
 ### Plans For the Future 
