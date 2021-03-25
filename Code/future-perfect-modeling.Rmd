@@ -1,5 +1,5 @@
 ---
-title: "Future Perfect Model"
+title: "Future Perfect Models"
 author: 'Document Author: Jasmine Cui'
 output:
   html_document:
@@ -13,15 +13,12 @@ output:
 # install.packages('dplyr')
 # install.packages('ggplot2')
 # install.packages('xtable')
-# devtools::install_github('Mikata-Project/ggthemr') 
+# install.packages('ggthemes')
 
 # Load libraries
 library(tidyverse)
 library(xtable)
-library(ggthemr)
-
-# Set .rmd theme 
-ggthemr('fresh')
+library(ggthemes)
 ``` 
 
 # Data Exploration
