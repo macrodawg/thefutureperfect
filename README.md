@@ -13,9 +13,9 @@
   <img src="https://github.com/macrodawg/thefutureperfect/blob/main/images/kellen.png" width="200" title="Kellen Sandvik">
 </p>
 
-#### • Jasmine Ye 
-#### • Danielle Handel
-#### • Kellen Sandvik 
+<p align="center">
+#### Jasmine Cui, Danielle Handel, Kellen Sandvik 
+</p>
 
 ### Ethos 
 
