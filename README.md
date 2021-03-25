@@ -36,9 +36,9 @@ By helping ERASE expand and refine their social media approach we hope to play o
 
 ### Modeling Overview:  
  _(Model is located in future-perfect-modeling.Rmd in the 'code' folder of this repository)_
- 
- <p align="center">
-  <img src="https://github.com/macrodawg/thefutureperfect/blob/main/images/datascience.jpg" width="300" title="Towards data science!">
+
+<p align="center">
+  <img src="https://github.com/macrodawg/thefutureperfect/blob/main/images/hashtags.png" width="650" title="Hashtag success!">
 </p>
   
  Within the scope of our project, there are four main models which we have developed and the use case for each is as follows: 
@@ -58,8 +58,8 @@ From a macro-perspective, these models are used to replicate, albeit simplistica
 As humans, while we have incredible intuition, we are limited by or physical needs. Consequently, we are equipped to see the trees and to understand them in detail. 
 However, our capacity for insight is turbocharged by the power of modern technology. Through machine learning we take flight — suddenly, understanding the forest becomes a possibility. 
 
-<p align="center">
-  <img src="https://github.com/macrodawg/thefutureperfect/blob/main/images/hashtags.png" width="650" title="Hashtag success!">
+ <p align="center">
+  <img src="https://github.com/macrodawg/thefutureperfect/blob/main/images/datascience.jpg" width="300" title="Towards data science!">
 </p>
 
 ### Plans For the Future: 
