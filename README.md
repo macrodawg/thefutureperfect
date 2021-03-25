@@ -18,6 +18,11 @@
 #### • Kellen Sandvik 
 
 ### Ethos 
+
+<p align="center">
+  <img src="https://github.com/macrodawg/thefutureperfect/blob/main/images/children.jpg" width="300" title="A child's rights are human rights.">
+</p>
+
 #### Above all, we believe, firmly, that _a child's rights are human rights._ 
 
 #### To us, Master Modeler 2021 represents more than a competition — it is an opportunity to contribute our talents, our energy to a cause that is deeply meaningful and impactful. 
